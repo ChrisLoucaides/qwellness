@@ -55,7 +55,7 @@ ROOT_URLCONF = 'qwellness.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
+        'DIRS': [BASE_DIR / 'user_management/templates']
         ,
         'APP_DIRS': True,
         'OPTIONS': {
