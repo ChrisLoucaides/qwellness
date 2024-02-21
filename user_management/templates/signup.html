@@ -4,13 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #5b8eee, #9bc9e5);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        form {
+            background: linear-gradient(to right, #cfdbf3, #8ed1ef);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 5%;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 4%;
+            color: #0c1023;
+        }
+
+        input,
+        button {
+            width: 100%;
+            padding: 4%;
+            margin-bottom: 8%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #0a90d9;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0181e0;
+        }
+    </style>
 </head>
 <body>
-    <h2>Signup</h2>
+<div>
+    <h1>Q-Wellness Signup</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Signup</button>
     </form>
+</div>
 </body>
 </html>
