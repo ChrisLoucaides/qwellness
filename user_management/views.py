@@ -29,7 +29,6 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            print(user)
             return redirect('dashboard')
         else:
             print("Authentication failed for user:", username)
