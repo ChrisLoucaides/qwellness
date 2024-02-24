@@ -37,7 +37,7 @@ class UserLoginTestCase(TestCase):
 
         response = self.when_we_attempt_authentication(request)
 
-        self.the_user_is_not_logged_in_and_the_login_page_is_re_displayed(response)
+        self.then_the_user_is_not_logged_in_and_the_login_page_is_re_displayed(response)
         self.and_the_response_contains(response, AN_INVALID_CREDENTIALS_MESSAGE)
 
     def test_should_not_login_user_given_wrong_http_method(self):
@@ -45,7 +45,7 @@ class UserLoginTestCase(TestCase):
 
         response = self.when_we_attempt_authentication(request)
 
-        self.the_user_is_not_logged_in_and_the_login_page_is_re_displayed(response)
+        self.then_the_user_is_not_logged_in_and_the_login_page_is_re_displayed(response)
 
     def given_a_login_get_request(self):
         request = self.factory.get(reverse('login'))
@@ -74,8 +74,7 @@ class UserLoginTestCase(TestCase):
     def and_the_response_contains(self, response, response_message):
         self.assertContains(response, response_message)
 
-    def the_user_is_not_logged_in_and_the_login_page_is_re_displayed(self,
-                                                                     response):  # TODO: Revisit this, add assertion to check for login page?
+    def then_the_user_is_not_logged_in_and_the_login_page_is_re_displayed(self, response):  # TODO: Revisit this, add assertion to check for login page?
         self.assertEqual(response.status_code, 200)
 
 
