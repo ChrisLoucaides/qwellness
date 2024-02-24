@@ -82,7 +82,7 @@ class SignUpTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    def test_signup_success(self):
+    def test_should_register_a_new_user_and_redirect_them_to_login_page(self):
         request = self.given_a_sign_up_form_post_request_with(A_VALID_USERNAME, A_VALID_PASSWORD, A_VALID_PASSWORD,
                                                               A_VALID_EMAIL_ADDRESS, AN_EXAMPLE_FIRST_NAME,
                                                               AN_EXAMPLE_LAST_NAME)
@@ -91,14 +91,14 @@ class SignUpTestCase(TestCase):
 
         self.then_a_new_user_is_created_and_we_redirect_them(response)
 
-    def test_signup_invalid_form(self):
+    def test_should_not_register_a_new_user_and_should_redisplay_signup_page(self):
         request = self.given_an_invalid_signup_form_post_request()
 
         response = self.when_we_try_and_register_a_new_user(request)
 
         self.then_the_user_is_not_created_and_the_signup_page_is_redisplayed(response)
 
-    def test_signup_get_request(self):
+    def should_not_register_user_given_wrong_http_method(self):
         request = self.given_a_sign_up_form_get_request()
 
         response = self.when_we_try_and_register_a_new_user(request)

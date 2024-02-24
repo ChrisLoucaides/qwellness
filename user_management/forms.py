@@ -5,10 +5,17 @@ from .models import Account
 class SignupForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
+    ADVISOR_CHOICES = [
+        ('mahesha_samaratunga', 'Mahesha Samaratunga'),
+        ('usman_naeem', 'Usman Naeem'),
+        ('tassos-tombros', 'Tassos Tombros'),
+    ]
+
+    advisor = forms.ChoiceField(choices=ADVISOR_CHOICES, label='Advisor')
 
     class Meta:
         model = Account
-        fields = ['username', 'password', 'confirm_password', 'email', 'first_name', 'last_name']
+        fields = ['username', 'password', 'confirm_password', 'email', 'first_name', 'last_name', 'advisor']
         labels = {
             'username': 'Username',
             'email': 'Email',
