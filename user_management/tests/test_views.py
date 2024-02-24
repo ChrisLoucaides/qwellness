@@ -98,7 +98,7 @@ class SignUpTestCase(TestCase):
 
         self.then_the_user_is_not_created_and_the_signup_page_is_redisplayed(response)
 
-    def should_not_register_user_given_wrong_http_method(self):
+    def test_should_not_register_user_given_wrong_http_method(self):
         request = self.given_a_sign_up_form_get_request()
 
         response = self.when_we_try_and_register_a_new_user(request)
