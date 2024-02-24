@@ -125,6 +125,12 @@
             color: #e4faff;
         }
 
+        .error {
+            color: white;
+            text-decoration: underline;
+            font-size: 1.2em;
+        }
+
     </style>
 </head>
 <body>
@@ -155,6 +161,9 @@
                                required>
                         <i class="bi bi-lock"></i>
                     </div>
+                    {% if error_message %}
+                        <strong class="error">{{ error_message }}</strong>
+                    {% endif %}
                     <div class="text-right">
                         <button type="submit" class="btn btn-light btn-rounded login-button"><i
                                 class="bi bi-arrow-right"></i></button>

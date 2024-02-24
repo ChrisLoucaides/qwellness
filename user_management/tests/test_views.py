@@ -64,6 +64,7 @@ class UserLoginTestCase(TestCase):
 
     def then_the_user_is_logged_in_and_redirected(self, response):
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('dashboard'))
 
     @staticmethod
     def when_we_attempt_authentication(request):
