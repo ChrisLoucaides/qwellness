@@ -25,14 +25,14 @@ class UserLoginTestCase(TestCase):
         self.password = A_VALID_PASSWORD
         self.user = Account.objects.create_user(username=self.username, password=self.password)
 
-    def test_login_successful(self):
+    def test_should_login_user_given_valid_credentials(self):
         request = self.given_a_login_post_request_with_credentials(self.username, self.password)
 
         response = self.when_we_attempt_authentication(request)
 
         self.then_the_user_is_logged_in_and_redirected(response)
 
-    def test_invalid_credentials(self):
+    def test_should_not_login_user_given_invalid_credentials(self):
         request = self.given_a_login_post_request_with_credentials(self.username, AN_INVALID_PASSWORD)
 
         response = self.when_we_attempt_authentication(request)
@@ -40,7 +40,7 @@ class UserLoginTestCase(TestCase):
         self.the_user_is_not_logged_in_and_the_login_page_is_re_displayed(response)
         self.and_the_response_contains(response, AN_INVALID_CREDENTIALS_MESSAGE)
 
-    def test_get_request(self):
+    def test_should_not_login_user_given_wrong_http_method(self):
         request = self.given_a_login_get_request()
 
         response = self.when_we_attempt_authentication(request)
