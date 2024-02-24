@@ -1,17 +1,11 @@
 from django import forms
-from .models import Account
+from .models import Account, Advisor
 
 
 class SignupForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
-    ADVISOR_CHOICES = [
-        ('mahesha_samaratunga', 'Mahesha Samaratunga'),
-        ('usman_naeem', 'Usman Naeem'),
-        ('tassos-tombros', 'Tassos Tombros'),
-    ]
-
-    advisor = forms.ChoiceField(choices=ADVISOR_CHOICES, label='Advisor')
+    advisor = forms.ModelChoiceField(queryset=Advisor.objects.all(), empty_label="Select Advisor")
 
     class Meta:
         model = Account
