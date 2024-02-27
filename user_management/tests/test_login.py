@@ -5,12 +5,10 @@ from django.urls import reverse
 from user_management.models import Account
 from user_management.views import user_login
 
-
 AN_INVALID_CREDENTIALS_MESSAGE = 'Invalid username or password'
 A_VALID_USERNAME = 'testuser'
 A_VALID_PASSWORD = 'testpassword'
 AN_INVALID_PASSWORD = 'invalid'
-
 
 
 class UserLoginTestCase(TestCase):

@@ -19,7 +19,8 @@ def signup(request):
             return redirect('login')
     else:
         form = SignupForm()
-    return render(request, 'signup.html', {'form': form})  # TODO FYP-9: Currently shows all users instead of  Advisors only
+    return render(request, 'signup.html',
+                  {'form': form})  # TODO FYP-9: Currently shows all users instead of  Advisors only
 
 
 def user_login(request):
