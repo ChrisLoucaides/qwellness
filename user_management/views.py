@@ -30,7 +30,7 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')
+            return redirect('dashboard')  # TODO FYP-10: Return redirect and cookie
         else:
             print("Authentication failed for user:", username)
             error_message = 'Invalid username or password'

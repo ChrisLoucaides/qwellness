@@ -57,7 +57,7 @@ class UserLoginTestCase(TestCase):
 
     def then_the_user_is_logged_in_and_redirected(self, response):
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse('dashboard'))
+        self.assertEqual(response.url, reverse('dashboard'))  # TODO FYP-10: Change URL to frontend
 
     @staticmethod
     def when_we_attempt_authentication(request):
@@ -68,5 +68,5 @@ class UserLoginTestCase(TestCase):
         self.assertContains(response, response_message)
 
     def then_the_user_is_not_logged_in_and_the_login_page_is_re_displayed(self,
-                                                                          response):  # TODO: Revisit this, add assertion to check for login page?
+                                                                          response):
         self.assertEqual(response.status_code, 200)
