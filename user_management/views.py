@@ -1,8 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from django.http import JsonResponse, HttpResponseNotAllowed
-from django.shortcuts import render
+from django.http import HttpResponseRedirect
 
 from django.shortcuts import render, redirect
 from .forms import SignupForm
@@ -30,7 +29,9 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')  # TODO FYP-10: Return redirect and cookie
+            response = HttpResponseRedirect('http://localhost:5173/')
+            response.set_cookie('user_id', str(user.id))
+            return response
         else:
             print("Authentication failed for user:", username)
             error_message = 'Invalid username or password'
