@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 
 from django.shortcuts import render, redirect
 from .forms import SignupForm
@@ -43,3 +43,16 @@ def user_login(request):
 @login_required
 def dashboard(request):
     return render(request, 'dashboard.html')
+
+
+@login_required
+def get_user_info(request):
+    # noinspection PyUnresolvedReferences
+    user_info = {
+        "id": request.user.id,
+        "username": request.user.username,
+        "first_name": request.user.first_name,
+        "role": request.user.role,
+        "advisor": getattr(request.user.advisor, 'username', None)
+    }
+    return JsonResponse(user_info)

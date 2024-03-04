@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -25,7 +24,13 @@ SECRET_KEY = 'django-insecure-#g36v)5xw*r53=qakfj6!4mpk20p1rcwz4kv5b33a))ou*e$jc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+CORS_ALLOWED_ORIGINS = ['http://127.0.0.1', 'http://localhost', 'http://127.0.0.1:5173',  'http://localhost:5173']
+ALLOWED_HOSTS = ['http://127.0.0.1',  '127.0.0.1', 'localhost', 'http://localhost', 'http://127.0.0.1:5173',
+                 '127.0.0.1:5173', 'localhost:5173', 'http://localhost:5173']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000/','http://*.127.0.0.1:5173']
+CORS_ORIGIN_ALLOW_ALL = False
+CSRF_COOKIE_SECURE = True
+CORS_ALLOW_CREDENTIALS = True
 
 
 # Application definition
@@ -37,10 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'user_management',
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -71,7 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'qwellness.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -81,7 +87,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -101,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -112,7 +116,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
