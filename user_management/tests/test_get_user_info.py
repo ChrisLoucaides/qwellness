@@ -48,22 +48,33 @@ class TestGetUserInfo(TestCase):
                                              role='student')
 
     @staticmethod
-    def when_a_request_is_made(request):
-        return get_user_info(request)
-
-    @staticmethod
     def and_the_user_is_saved(user):
         user.save()
 
-    def test_get_user_info_unauthenticated(self):
-        # Given
-        request = self.factory.get('/get-user-info/')
-        request.user = Mock(is_authenticated=False)
+    def test_get_user_info_request_should_redirect_to_login_given_no_authentication(self):
+        to_get_info = self.given_a_request_is_made_to_the_get_user_info_endpoint()
+        self.and_the_user_is_not_authenticated(to_get_info)
 
-        # When
-        response = get_user_info(request)
+        response = self.when_a_request_is_made(to_get_info)
 
-        # Then
+        self.then_the_user_is_redirected(response)
+        self.to_the_login_page(response)
+
+    def then_the_user_is_redirected(self, response):
         self.assertEqual(response.status_code, 302)
+
+    def given_a_request_is_made_to_the_get_user_info_endpoint(self):
+        request = self.factory.get('/get-user-info/')
+        return request
+
+    def to_the_login_page(self, response):
         self.assertIn('Location', response.headers)
         self.assertIn('/accounts/login/', response.headers['Location'])
+
+    @staticmethod
+    def and_the_user_is_not_authenticated(request):
+        request.user = Mock(is_authenticated=False)
+
+    @staticmethod
+    def when_a_request_is_made(request):
+        return get_user_info(request)
