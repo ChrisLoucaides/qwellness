@@ -19,7 +19,7 @@ def signup(request):
     else:
         form = SignupForm()
     return render(request, 'signup.html',
-                  {'form': form})  # TODO FYP-9: Currently shows all users instead of  Advisors only
+                  {'form': form})
 
 
 def user_login(request):

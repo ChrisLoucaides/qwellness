@@ -5,7 +5,7 @@ from .models import Account, Advisor
 class SignupForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
-    advisor = forms.ModelChoiceField(queryset=Advisor.objects.all(), empty_label="Select Advisor")
+    advisor = forms.ModelChoiceField(queryset=Account.objects.filter(role=Account.Role.ADVISOR), empty_label="Select Advisor")
 
     class Meta:
         model = Account
@@ -29,7 +29,7 @@ class SignupForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.role = Account.Role.STUDENT  # Set role to Student
+        user.role = Account.Role.STUDENT
         if commit:
             user.save()
         return user
