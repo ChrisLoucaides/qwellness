@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect, JsonResponse
@@ -38,6 +38,12 @@ def user_login(request):
             return render(request, 'login.html', {'error_message': error_message})
     else:
         return render(request, 'login.html')
+
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return redirect('/login')
 
 
 @login_required
