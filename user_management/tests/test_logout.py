@@ -29,18 +29,15 @@ class UserLogoutTestCase(TestCase):
             return None
 
         # noinspection PyTypeChecker
-        middleware = SessionMiddleware(get_response)  # Create session as it is needed to create middleware object
+        middleware = SessionMiddleware(get_response)
         middleware.process_request(request)
         return request
 
     def test_should_not_logout_when_user_is_not_logged_in(self):
-        # Given
         request = self.given_a_logout_request_from_a_non_logged_in_user()
 
-        # When
         response = self.when_we_attempt_to_logout(request)
 
-        # Then
         self.assertEqual(response.status_code, 302)
 
     def given_a_logout_request_from_a_non_logged_in_user(self):
