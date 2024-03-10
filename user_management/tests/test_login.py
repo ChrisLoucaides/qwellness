@@ -5,7 +5,7 @@ from django.urls import reverse
 from user_management.models import Account
 from user_management.views import user_login
 
-DASHBOARD_URL = 'localhost:5173'
+DASHBOARD_URL = 'http://localhost:5173/'
 
 AN_INVALID_CREDENTIALS_MESSAGE = 'Invalid username or password'
 A_VALID_USERNAME = 'testuser'
@@ -59,7 +59,7 @@ class UserLoginTestCase(TestCase):
 
     def then_the_user_is_logged_in_and_redirected(self, response):
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse(DASHBOARD_URL))
+        self.assertEqual(response.url, DASHBOARD_URL)
 
     @staticmethod
     def when_we_attempt_authentication(request):
