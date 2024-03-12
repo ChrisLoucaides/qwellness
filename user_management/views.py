@@ -27,7 +27,7 @@ def user_login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
-        if user is not None:
+        if user is not None:  # TODO FYP-15: Add Last Login TimeK
             login(request, user)
             response = HttpResponseRedirect('http://localhost:5173/')
             response.set_cookie('user_id', str(user.id))
@@ -54,7 +54,7 @@ def dashboard(request):
 @login_required
 def get_user_info(request):
     # noinspection PyUnresolvedReferences
-    user_info = {
+    user_info = {  # TODO: FYP-15 Add last login time to this response
         "id": request.user.id,
         "username": request.user.username,
         "first_name": request.user.first_name,
