@@ -28,7 +28,7 @@ def user_login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
-        if user is not None:  # TODO FYP-15: Add Last Login Time
+        if user is not None:
             login(request, user)
             user.last_login_time = timezone.now()
             user.save()
@@ -57,7 +57,7 @@ def dashboard(request):
 @login_required
 def get_user_info(request):
     # noinspection PyUnresolvedReferences
-    user_info = {  # TODO: FYP-15 Add last login time to this response
+    user_info = {
         "id": request.user.id,
         "username": request.user.username,
         "first_name": request.user.first_name,
