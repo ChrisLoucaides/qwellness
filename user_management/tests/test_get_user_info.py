@@ -21,7 +21,11 @@ class TestGetUserInfo(TestCase):
         self.and_the_content_matches_with_our_expected_data(expected_data, response)
 
     def and_the_content_matches_with_our_expected_data(self, expected_data, response):
-        self.assertEqual(json.loads(response.content), expected_data)
+        response_data = json.loads(response.content.decode('utf-8'))
+        for key in expected_data:
+            self.assertEqual(response_data[key], expected_data[key])
+
+        self.assertTrue('last_login_time' in response_data)
 
     def then_the_response_comes_back_as_200(self, response, user):
         self.assertEqual(response.status_code, 200)

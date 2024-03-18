@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 
 from django.shortcuts import render, redirect
 from .forms import SignupForm
+from django.utils import timezone
 
 
 def signup(request):
@@ -27,8 +28,10 @@ def user_login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
-        if user is not None:  # TODO FYP-15: Add Last Login TimeK
+        if user is not None:  # TODO FYP-15: Add Last Login Time
             login(request, user)
+            user.last_login_time = timezone.now()
+            user.save()
             response = HttpResponseRedirect('http://localhost:5173/')
             response.set_cookie('user_id', str(user.id))
             return response
@@ -59,6 +62,7 @@ def get_user_info(request):
         "username": request.user.username,
         "first_name": request.user.first_name,
         "role": request.user.role,
-        "advisor": getattr(request.user.advisor, 'username', None)
+        "advisor": getattr(request.user.advisor, 'username', None),
+        "last_login_time": request.user.last_login_time
     }
     return JsonResponse(user_info)
