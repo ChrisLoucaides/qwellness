@@ -8,7 +8,7 @@ from .forms import SignupForm
 from django.utils import timezone
 
 
-def signup(request):
+def signup(request):  # TODO: FYP-17 Assign advisor to student here
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
