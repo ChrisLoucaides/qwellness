@@ -1,6 +1,6 @@
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
-
+from user_management.models import Advisor
 from user_management.views import signup
 
 AN_EXAMPLE_LAST_NAME = 'User'
@@ -16,11 +16,14 @@ A_VALID_ADVISOR_USERNAME = "ValidAdvisor"
 class SignUpTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+        self.advisor = Advisor.objects.create(username=A_VALID_ADVISOR_USERNAME)
 
     def test_should_register_a_new_user_and_redirect_them_to_login_page(self):
-        request = self.given_a_sign_up_form_post_request_with(A_VALID_USERNAME, A_VALID_PASSWORD, A_VALID_PASSWORD,
-                                                              A_VALID_EMAIL_ADDRESS, AN_EXAMPLE_FIRST_NAME,
-                                                              AN_EXAMPLE_LAST_NAME, A_VALID_ADVISOR_USERNAME)
+        request = self.given_a_sign_up_form_post_request_with(
+            A_VALID_USERNAME, A_VALID_PASSWORD, A_VALID_PASSWORD,
+            A_VALID_EMAIL_ADDRESS, AN_EXAMPLE_FIRST_NAME,
+            AN_EXAMPLE_LAST_NAME, self.advisor.id
+        )
 
         response = self.when_we_try_and_register_a_new_user(request)
 
@@ -58,7 +61,7 @@ class SignUpTestCase(TestCase):
         return request
 
     def then_a_new_user_is_created(self, response):
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
     def then_the_user_is_not_created_and_the_signup_page_is_redisplayed(self, response):
         self.assertEqual(response.status_code, 200)
