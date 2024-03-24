@@ -8,19 +8,19 @@ from .forms import SignupForm
 from django.utils import timezone
 
 
-def signup(request):  # TODO: FYP-17 Assign advisor to student here
+def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
             # Hash the password before saving the user
             user = form.save(commit=False)
             user.password = make_password(form.cleaned_data['password'])
+            user.advisor = form.cleaned_data['advisor']
             user.save()
             return redirect('login')
     else:
         form = SignupForm()
-    return render(request, 'signup.html',
-                  {'form': form})
+    return render(request, 'signup.html', {'form': form})
 
 
 def user_login(request):

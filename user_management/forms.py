@@ -19,6 +19,10 @@ class SignupForm(forms.ModelForm):
             'last_name': 'Last Name'
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['advisor'].queryset = Advisor.objects.filter(role=Account.Role.ADVISOR)
+
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
