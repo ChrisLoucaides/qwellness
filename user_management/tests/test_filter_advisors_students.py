@@ -45,10 +45,6 @@ class TestFilterAdvisorsStudents(TestCase):
         return request
 
     @staticmethod
-    def when_we_filter_the_advisors_students(request):
-        return filter_advisors_students(request)
-
-    @staticmethod
     def and_deserialize_the_response_content(response):
         return json.loads(response.content.decode('utf-8'))
 
@@ -63,13 +59,22 @@ class TestFilterAdvisorsStudents(TestCase):
 
     def test_filter_advisors_students_no_authentication(self):
 
-        request = self.factory.get('/filter-advisors-students/')
-        request.user = Mock(is_authenticated=False)
+        request = self.when_a_non_authenticated_user_makes_a_request_to_get_a_list_of_their_students()
 
-        # Call the view function
-        response = filter_advisors_students(request)
+        response = self.when_we_filter_the_advisors_students(request)
 
-        # Check if response redirects to log in
+        self.then_we_redirect_the_user_to_the_login_page(response)
+
+    def then_we_redirect_the_user_to_the_login_page(self, response):
         self.assertEqual(response.status_code, 302)
         self.assertIn('Location', response.headers)
         self.assertIn('/accounts/login/', response.headers['Location'])
+
+    def when_a_non_authenticated_user_makes_a_request_to_get_a_list_of_their_students(self):
+        request = self.factory.get('/filter-advisors-students/')
+        request.user = Mock(is_authenticated=False)
+        return request
+
+    @staticmethod
+    def when_we_filter_the_advisors_students(request):
+        return filter_advisors_students(request)
