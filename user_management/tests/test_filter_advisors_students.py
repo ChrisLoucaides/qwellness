@@ -11,36 +11,55 @@ class TestFilterAdvisorsStudents(TestCase):
         self.factory = RequestFactory()
         self.User = get_user_model()
 
-    def test_filter_advisors_students_returns_students(self):
-        # Given advisor and student
-        advisor = Advisor.objects.create(username='test_advisor')
-        student = Student.objects.create(username='test_student', advisor=advisor)
+    def test_should_filter_all_students_based_on_advisor(self):
+        advisor = self.given_an_advisor_with_username('test_advisor')
+        # noinspection PyUnusedLocal
+        student = self.and_a_student_with_username_and_advisor('test_student', advisor)  # it is used, just not directly
 
-        # When we make a request
-        request = self.factory.get('/filter-advisors-students/')
-        request.user = Mock(is_authenticated=True)
+        request = self.when_an_authenticated_advisor_makes_a_request_to_get_a_list_of_their_students()
+        response = self.and_we_filter_the_advisors_students(request)
 
-        # with an advisor username
-        request.GET = request.GET.copy()
-        request.GET['username'] = 'test_advisor'
+        self.then_we_receive_a_200_response_code(response)
 
-        # and we filter the students
-        response = filter_advisors_students(request)
+        response_data = self.and_deserialize_the_response_content(response)
 
-        # Check if response is successful
-        self.assertEqual(response.status_code, 200)
+        self.and_all_students_are_in_the_response(response_data)
+        self.and_the_student_details_are_correct(response_data)
 
-        # Deserialize response content
-        response_data = json.loads(response.content.decode('utf-8'))
+    def and_the_student_details_are_correct(self, response_data):
+        returned_student = response_data['students'][0]
+        self.assertEqual(returned_student['username'], 'test_student')
 
-        # Check if students are returned
+    def and_all_students_are_in_the_response(self, response_data):
         self.assertIn('students', response_data)
         self.assertEqual(len(response_data['students']), 1)
 
-        # Check student details
-        returned_student = response_data['students'][0]
-        self.assertEqual(returned_student['username'], 'test_student')
-        # Add more assertions for other student details if needed
+    def then_we_receive_a_200_response_code(self, response):
+        self.assertEqual(response.status_code, 200)
+
+    def when_an_authenticated_advisor_makes_a_request_to_get_a_list_of_their_students(self):
+        request = self.factory.get('/filter-advisors-students/')
+        request.user = Mock(is_authenticated=True)
+        request.GET = request.GET.copy()
+        request.GET['username'] = 'test_advisor'
+        return request
+
+    @staticmethod
+    def and_we_filter_the_advisors_students(request):
+        return filter_advisors_students(request)
+
+    @staticmethod
+    def and_deserialize_the_response_content(response):
+        return json.loads(response.content.decode('utf-8'))
+
+    @staticmethod
+    def and_a_student_with_username_and_advisor(username, advisor):
+        return Student.objects.create(username=username, advisor=advisor)
+
+    @staticmethod
+    def given_an_advisor_with_username(username):
+        advisor = Advisor.objects.create(username=username)
+        return advisor
 
     def test_filter_advisors_students_no_authentication(self):
         # Create a mock request without authentication
@@ -50,7 +69,7 @@ class TestFilterAdvisorsStudents(TestCase):
         # Call the view function
         response = filter_advisors_students(request)
 
-        # Check if response redirects to login
+        # Check if response redirects to log in
         self.assertEqual(response.status_code, 302)
         self.assertIn('Location', response.headers)
         self.assertIn('/accounts/login/', response.headers['Location'])
