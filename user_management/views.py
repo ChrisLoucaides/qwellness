@@ -1,11 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, JsonResponse
 
 from django.shortcuts import render, redirect
 from .forms import SignupForm
 from django.utils import timezone
+
+from .models import Student, Advisor
 
 
 def signup(request):
@@ -66,3 +69,32 @@ def get_user_info(request):
         "last_login_time": request.user.last_login_time
     }
     return JsonResponse(user_info)
+
+
+@login_required()
+def filter_advisors_students(request):
+    if request.method == 'GET':
+        advisor_username = request.GET.get('username')
+        print(advisor_username)
+
+        try:
+            advisor = Advisor.objects.get(username=advisor_username)
+        except ObjectDoesNotExist:
+            return JsonResponse({'error': 'Advisor not found'}, status=404)
+
+        students = Student.objects.filter(advisor=advisor)
+
+        serialized_students = []
+        for student in students:
+            serialized_student = {
+                'username': student.username,
+                'first_name': student.first_name,
+                'last_name': student.last_name,
+                'last_login_time': student.last_login_time
+            }
+            serialized_students.append(serialized_student)
+
+        return JsonResponse({'students': serialized_students})
+
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
