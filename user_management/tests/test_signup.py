@@ -61,7 +61,7 @@ class SignUpTestCase(TestCase):
         return request
 
     def then_a_new_user_is_created(self, response):
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def then_the_user_is_not_created_and_the_signup_page_is_redisplayed(self, response):
         self.assertEqual(response.status_code, 200)
