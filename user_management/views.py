@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -90,7 +92,8 @@ def filter_advisors_students(request):
                 'username': student.username,
                 'first_name': student.first_name,
                 'last_name': student.last_name,
-                'last_login_time': student.last_login_time
+                'last_login_time': student.last_login_time,
+                'email': student.email
             }
             serialized_students.append(serialized_student)
 
