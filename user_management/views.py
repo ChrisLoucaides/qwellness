@@ -77,7 +77,6 @@ def get_user_info(request):
 def filter_advisors_students(request):
     if request.method == 'GET':
         advisor_username = request.GET.get('username')
-        print(advisor_username)
 
         try:
             advisor = Advisor.objects.get(username=advisor_username)
