@@ -1,42 +1,54 @@
-from django.test import TestCase, Client
-from task_management.models import Task, Student
-from task_management.views import create_task
 import json
+from django.test import TestCase, Client
+from task_management.models import Task
+from user_management.models import Student
 
 
-class CreateTaskViewTestCase(TestCase):
+class CreateTaskTest(TestCase):
     def setUp(self):
-        # Create test accounts (students) for authentication
-        self.student = Student.objects.create_user(username='test_user', password='test_password')
-
-        # Create a test client
         self.client = Client()
+        # Create a test student and log in
+        self.student = Student.objects.create(username='test_student')
+        self.client.force_login(self.student)
 
-    def test_should_create_a_task_for_a_student_account(self):
-        # Given: Valid task data
-        payload = {
-            "username": "test_user",
-            "name": "Complete Assignment",
-            "due_date": "2024-04-10",
-            "description": "Finish writing the essay for English class"
+    def test_create_task_success(self):
+        # Given
+        data = {
+            'username': 'test_student',
+            'name': 'Test Task',
+            'due_date': '2024-04-02',
+            'description': 'Test Description'
         }
-        # When: Calling the create_task method
-        response = create_task(self.get_request(payload))
+        # When
+        response = self.client.post('/create_task/', data=data)
+        # Then
+        self.assertEqual(response.status_code, 201)
+        response_data = json.loads(response.content)
+        self.assertTrue(response_data['success'])
+        task_id = response_data['task_id']
+        self.assertIsNotNone(Task.objects.filter(pk=task_id).first())
+        # Clean up
+        Task.objects.filter(pk=task_id).delete()
 
-        # Then: Ensure that the task is created successfully
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
-        self.assertTrue(data['success'])
-        self.assertTrue(Task.objects.filter(name="Complete Assignment").exists())
+    def test_create_task_student_not_found(self):
+        # Given
+        data = {
+            'username': 'non_existing_student',
+            'name': 'Test Task',
+            'due_date': '2024-04-02',
+            'description': 'Test Description'
+        }
+        # When
+        response = self.client.post('/create_task/', data=data)
+        # Then
+        self.assertEqual(response.status_code, 404)
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data['error'], 'Student not found')
 
-        # Get the student object
-        student = Student.objects.get(username='test_user')
-
-        # Check if the created task ID is added to the student's task_ids JSONField
-        task_id = Task.objects.get(name="Complete Assignment").id
-        self.assertIn(task_id, student.task_ids)
-
-    def get_request(self, payload):
-        request = self.client.post('/create-task/', json.dumps(payload), content_type='application/json')
-        request.user = self.student
-        return request
+    def test_create_task_method_not_allowed(self):
+        # When
+        response = self.client.get('/create_task/')
+        # Then
+        self.assertEqual(response.status_code, 405)
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data['error'], 'Method not allowed')
