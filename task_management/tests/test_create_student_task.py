@@ -4,7 +4,7 @@ from task_management.models import Task
 from user_management.models import Student
 
 
-class CreateTaskTest(TestCase):
+class CreateTaskTest(TestCase):  # TODO: FYP-22 Refactor me
     def setUp(self):
         self.client = Client()
         # Create a test student and log in
