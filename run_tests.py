@@ -2,6 +2,7 @@ import os
 import django
 from django.conf import settings
 from django.test.utils import get_runner
+from termcolor import colored
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'qwellness.settings'
 django.setup()
@@ -18,6 +19,6 @@ def run_tests():
 if __name__ == "__main__":
     failures = run_tests()
     if failures:
-        print("Some tests failed!")
+        print(colored("Some tests failed...", color="red"))
     else:
-        print("All tests passed!")
+        print(colored("All tests passed!", color="green"))
