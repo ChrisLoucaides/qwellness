@@ -1,17 +1,25 @@
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from task_management.models import Task
 from user_management.models import Student
 
 
-@login_required
+@login_required()
 def create_task(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        name = request.POST.get('name')
-        due_date = request.POST.get('due_date')
-        description = request.POST.get('description')
+        data = json.loads(request.body.decode('utf-8'))
+
+        username = data.get('username')
+        name = data.get('name')
+        due_date = data.get('due_date')
+        description = data.get('description')
+
+        if not username:
+            return JsonResponse({'error': 'Username is required'}, status=400)
 
         try:
             student = Student.objects.get(username=username)
@@ -30,7 +38,7 @@ def create_task(request):
         student.task_ids.append(task.id)
         student.save()
 
-        return JsonResponse({'success': True, 'task_id': task.id}, status='201')
+        return JsonResponse({'success': True, 'task_id': task.id}, status=201)
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
