@@ -10,7 +10,7 @@ class CreateTaskTest(TestCase):
         self.student = Student.objects.create(username='test_student')
         self.client.force_login(self.student)
 
-    def test_create_task_success(self):
+    def test_should_create_a_new_task_for_a_student(self):
         data = self.given_a_valid_task_payload()
 
         response = self.when_a_post_request_is_made_to_the_create_task_endpoint(data)
@@ -47,7 +47,7 @@ class CreateTaskTest(TestCase):
         }
         return data
 
-    def test_create_task_student_not_found(self):
+    def test_should_not_create_task_given_student_does_not_exist(self):
         data = self.given_an_invalid_student_in_the_payload()
 
         response = self.when_a_post_request_is_made_to_the_create_task_endpoint(data)
@@ -73,7 +73,7 @@ class CreateTaskTest(TestCase):
         }
         return data
 
-    def test_create_task_method_not_allowed(self):
+    def test_should_not_create_a_task_given_wrong_http_method(self):
         response = self.when_a_get_request_is_made_to_the_create_task_endpoint()
 
         self.then_we_get_a_405(response)
