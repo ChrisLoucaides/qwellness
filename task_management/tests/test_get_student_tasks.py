@@ -4,15 +4,44 @@ from task_management.models import Task
 from user_management.models import Student
 
 
-class GetStudentTasksTest(TestCase):  # TODO FYP-23: Refactor me
+class GetStudentTasksTest(TestCase):
     def setUp(self):
         self.client = Client()
-        # Create a test student and log in
         self.student = Student.objects.create(username='test_student')
         self.client.force_login(self.student)
 
-    def test_get_student_tasks_success(self):
-        # Given
+    def test_should_retrieve_tasks_associated_to_a_student(self):
+        self.given_two_existing_tasks_are_in_the_database()
+
+        response = self.when_we_make_a_request_to_the_get_tasks_endpoint()
+
+        self.then_we_get_back_a_200(response)
+
+        response_data = json.loads(response.content)
+        self.and_the_list_of_tasks_is_in_the_response_data(response_data)
+
+        tasks = response_data['tasks']
+        self.and_there_are_exactly_two_tasks_in_the_response(tasks)
+        self.and_both_tasks_match_those_in_the_database(tasks)
+
+    def and_both_tasks_match_those_in_the_database(self, tasks):
+        self.assertEqual(tasks[0]['name'], 'Test Task 1')
+        self.assertEqual(tasks[1]['name'], 'Test Task 2')
+
+    def and_there_are_exactly_two_tasks_in_the_response(self, tasks):
+        self.assertEqual(len(tasks), 2)
+
+    def and_the_list_of_tasks_is_in_the_response_data(self, response_data):
+        self.assertTrue('tasks' in response_data)
+
+    def then_we_get_back_a_200(self, response):
+        self.assertEqual(response.status_code, 200)
+
+    def when_we_make_a_request_to_the_get_tasks_endpoint(self):
+        response = self.client.get('/get_student_tasks/?username=test_student')
+        return response
+
+    def given_two_existing_tasks_are_in_the_database(self):
         Task.objects.create(
             name='Test Task 1',
             due_date='2024-04-02',
@@ -25,16 +54,6 @@ class GetStudentTasksTest(TestCase):  # TODO FYP-23: Refactor me
             description='Test Description 2',
             student=self.student
         )
-        # When
-        response = self.client.get('/get_student_tasks/?username=test_student')
-        # Then
-        self.assertEqual(response.status_code, 200)
-        response_data = json.loads(response.content)
-        self.assertTrue('tasks' in response_data)
-        tasks = response_data['tasks']
-        self.assertEqual(len(tasks), 2)
-        self.assertEqual(tasks[0]['name'], 'Test Task 1')
-        self.assertEqual(tasks[1]['name'], 'Test Task 2')
 
     def test_get_student_tasks_student_not_found(self):
         # Given
