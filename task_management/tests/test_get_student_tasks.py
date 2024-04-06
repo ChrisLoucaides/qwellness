@@ -77,9 +77,9 @@ class GetStudentTasksTest(TestCase):
 
         self.then_we_get_a_405(response)
         response_data = json.loads(response.content)
-        self.and_the_response_message_contiains_a_method_not_allowed_error(response_data)
+        self.and_the_response_message_contains_a_method_not_allowed_error(response_data)
 
-    def and_the_response_message_contiains_a_method_not_allowed_error(self, response_data):
+    def and_the_response_message_contains_a_method_not_allowed_error(self, response_data):
         self.assertEqual(response_data['error'], 'Method not allowed')
 
     def then_we_get_a_405(self, response):
