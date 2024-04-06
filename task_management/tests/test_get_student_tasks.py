@@ -55,20 +55,36 @@ class GetStudentTasksTest(TestCase):
             student=self.student
         )
 
-    def test_get_student_tasks_student_not_found(self):
-        # Given
-        # Non-existing student
-        # When
-        response = self.client.get('/get_student_tasks/?username=non_existing_student')
-        # Then
-        self.assertEqual(response.status_code, 404)
+    def test_should_not_retrieve_tasks_given_invalid_student(self):
+        response = self.given_a_request_to_the_get_tasks_endpoint_containing_an_invalid_student()
+
+        self.then_we_get_a_404(response)
         response_data = json.loads(response.content)
+        self.and_the_response_message_contains_a_student_not_found_error(response_data)
+
+    def and_the_response_message_contains_a_student_not_found_error(self, response_data):
         self.assertEqual(response_data['error'], 'Student not found')
 
+    def then_we_get_a_404(self, response):
+        self.assertEqual(response.status_code, 404)
+
+    def given_a_request_to_the_get_tasks_endpoint_containing_an_invalid_student(self):
+        response = self.client.get('/get_student_tasks/?username=non_existing_student')
+        return response
+
     def test_get_student_tasks_method_not_allowed(self):
-        # When
-        response = self.client.post('/get_student_tasks/')
-        # Then
-        self.assertEqual(response.status_code, 405)
+        response = self.when_a_post_request_is_made_to_the_get_tasks_endpoint()
+
+        self.then_we_get_a_405(response)
         response_data = json.loads(response.content)
+        self.and_the_response_message_contiains_a_method_not_allowed_error(response_data)
+
+    def and_the_response_message_contiains_a_method_not_allowed_error(self, response_data):
         self.assertEqual(response_data['error'], 'Method not allowed')
+
+    def then_we_get_a_405(self, response):
+        self.assertEqual(response.status_code, 405)
+
+    def when_a_post_request_is_made_to_the_get_tasks_endpoint(self):
+        response = self.client.post('/get_student_tasks/')
+        return response
