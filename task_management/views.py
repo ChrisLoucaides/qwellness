@@ -2,7 +2,6 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 from task_management.models import Task
 from user_management.models import Student
@@ -67,5 +66,37 @@ def get_student_tasks(request):
         ]
 
         return JsonResponse({'tasks': serialized_tasks})
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+@login_required()
+def update_task(request):
+    if request.method == 'PUT':
+        data = json.loads(request.body.decode('utf-8'))
+
+        task_id = data.get('task_id')
+        name = data.get('name')
+        due_date = data.get('due_date')
+        description = data.get('description')
+
+        if not task_id:
+            return JsonResponse({'error': 'Task ID is required'}, status=400)
+
+        try:
+            task = Task.objects.get(id=task_id)
+        except Task.DoesNotExist:
+            return JsonResponse({'error': 'Task not found'}, status=404)
+
+        if name:
+            task.name = name
+        if due_date:
+            task.due_date = due_date
+        if description:
+            task.description = description
+
+        task.save()
+
+        return JsonResponse({'success': True, 'task_id': task.id})
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
