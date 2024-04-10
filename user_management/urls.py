@@ -5,7 +5,7 @@ urlpatterns = [
     # Other URL patterns
     path('signup/', signup, name='signup'),
     path('login/', user_login, name='login'),
-    path('get-user-info/', get_user_info, name='get_user_info'),  # TODO FYP:26 Change endpoint to remove method name
+    path('user-info/', get_user_info, name='user_info'),
     path('dashboard/', dashboard, name='dashboard'),
     path('logout/', user_logout, name='user_logout'),
     path('filter-advisors-students/', filter_advisors_students, name='user_logout')
