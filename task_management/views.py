@@ -75,7 +75,7 @@ def update_task(request):
     if request.method == 'PUT':
         data = json.loads(request.body.decode('utf-8'))
 
-        task_id = data.get('task_id')
+        task_id = data.get('id')
         name = data.get('name')
         due_date = data.get('due_date')
         description = data.get('description')
