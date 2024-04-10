@@ -2,7 +2,9 @@ import os
 import django
 from django.conf import settings
 from django.test.utils import get_runner
-from termcolor import colored
+from colorama import init as colorama_init
+from colorama import Fore
+from colorama import Style
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'qwellness.settings'
 django.setup()
@@ -17,8 +19,9 @@ def run_tests():
 
 
 if __name__ == "__main__":
+    colorama_init()
     failures = run_tests()
     if failures:
-        print(colored("Some tests failed...", color="red"))
+        print(f"{Fore.RED}Some tests failed...{Style.RESET_ALL}")
     else:
-        print(colored("All tests passed!", color="green"))
+        print(f"{Fore.GREEN}All tests passed!{Style.RESET_ALL}")
