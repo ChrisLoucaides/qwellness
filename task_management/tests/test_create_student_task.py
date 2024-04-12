@@ -13,11 +13,11 @@ class CreateTaskTest(TestCase):
     def test_should_create_a_new_task_for_a_student(self):
         data = self.given_a_valid_task_payload()
 
-        response = self.when_a_post_request_is_made_to_the_create_task_endpoint(data)
+        response = self.when_a_post_request_is_made_to_the_new_task_endpoint(data)
 
         self.then_a_new_task_is_created(response)
 
-        response_data = json.loads(response.content)
+        response_data = response.json()
         self.and_we_get_a_success_response(response_data)
 
         task_id = response_data['task_id']
@@ -34,8 +34,8 @@ class CreateTaskTest(TestCase):
     def then_a_new_task_is_created(self, response):
         self.assertEqual(response.status_code, 201)
 
-    def when_a_post_request_is_made_to_the_create_task_endpoint(self, data):
-        return self.client.post('/create_task/', data=data)
+    def when_a_post_request_is_made_to_the_new_task_endpoint(self, data):
+        return self.client.post('/new-task/', data=json.dumps(data), content_type='application/json')
 
     @staticmethod
     def given_a_valid_task_payload():
@@ -50,11 +50,11 @@ class CreateTaskTest(TestCase):
     def test_should_not_create_task_given_student_does_not_exist(self):
         data = self.given_an_invalid_student_in_the_payload()
 
-        response = self.when_a_post_request_is_made_to_the_create_task_endpoint(data)
+        response = self.when_a_post_request_is_made_to_the_new_task_endpoint(data)
 
         self.then_we_get_a_404(response)
 
-        response_data = json.loads(response.content)
+        response_data = response.json()
         self.and_the_response_contains_a_student_not_found_error_message(response_data)
 
     def and_the_response_contains_a_student_not_found_error_message(self, response_data):
@@ -74,11 +74,11 @@ class CreateTaskTest(TestCase):
         return data
 
     def test_should_not_create_a_task_given_wrong_http_method(self):
-        response = self.when_a_get_request_is_made_to_the_create_task_endpoint()
+        response = self.when_a_get_request_is_made_to_the_new_task_endpoint()
 
         self.then_we_get_a_405(response)
 
-        response_data = json.loads(response.content)
+        response_data = response.json()
         self.and_the_response_contains_a_method_not_allowed_message(response_data)
 
     def and_the_response_contains_a_method_not_allowed_message(self, response_data):
@@ -87,6 +87,6 @@ class CreateTaskTest(TestCase):
     def then_we_get_a_405(self, response):
         self.assertEqual(response.status_code, 405)
 
-    def when_a_get_request_is_made_to_the_create_task_endpoint(self):
-        response = self.client.get('/create_task/')
+    def when_a_get_request_is_made_to_the_new_task_endpoint(self):
+        response = self.client.get('/new-task/')
         return response
