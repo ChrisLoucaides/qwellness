@@ -13,7 +13,7 @@ class GetStudentTasksTest(TestCase):
     def test_should_retrieve_tasks_associated_to_a_student(self):
         self.given_two_existing_tasks_are_in_the_database()
 
-        response = self.when_we_make_a_request_to_the_get_tasks_endpoint()
+        response = self.when_we_make_a_request_to_the_student_tasks_endpoint()
 
         self.then_we_get_back_a_200(response)
 
@@ -37,8 +37,8 @@ class GetStudentTasksTest(TestCase):
     def then_we_get_back_a_200(self, response):
         self.assertEqual(response.status_code, 200)
 
-    def when_we_make_a_request_to_the_get_tasks_endpoint(self):
-        response = self.client.get('/get_student_tasks/?username=test_student')
+    def when_we_make_a_request_to_the_student_tasks_endpoint(self):
+        response = self.client.get('/student-tasks/?username=test_student')
         return response
 
     def given_two_existing_tasks_are_in_the_database(self):
@@ -56,7 +56,7 @@ class GetStudentTasksTest(TestCase):
         )
 
     def test_should_not_retrieve_tasks_given_invalid_student(self):
-        response = self.given_a_request_to_the_get_tasks_endpoint_containing_an_invalid_student()
+        response = self.given_a_request_to_the_student_tasks_endpoint_containing_an_invalid_student()
 
         self.then_we_get_a_404(response)
         response_data = json.loads(response.content)
@@ -68,12 +68,12 @@ class GetStudentTasksTest(TestCase):
     def then_we_get_a_404(self, response):
         self.assertEqual(response.status_code, 404)
 
-    def given_a_request_to_the_get_tasks_endpoint_containing_an_invalid_student(self):
-        response = self.client.get('/get_student_tasks/?username=non_existing_student')
+    def given_a_request_to_the_student_tasks_endpoint_containing_an_invalid_student(self):
+        response = self.client.get('/student-tasks/?username=non_existing_student')
         return response
 
     def test_get_student_tasks_method_not_allowed(self):
-        response = self.when_a_post_request_is_made_to_the_get_tasks_endpoint()
+        response = self.when_a_post_request_is_made_to_the_student_tasks_endpoint()
 
         self.then_we_get_a_405(response)
         response_data = json.loads(response.content)
@@ -85,6 +85,6 @@ class GetStudentTasksTest(TestCase):
     def then_we_get_a_405(self, response):
         self.assertEqual(response.status_code, 405)
 
-    def when_a_post_request_is_made_to_the_get_tasks_endpoint(self):
-        response = self.client.post('/get_student_tasks/')
+    def when_a_post_request_is_made_to_the_student_tasks_endpoint(self):
+        response = self.client.post('/student-tasks/')
         return response
