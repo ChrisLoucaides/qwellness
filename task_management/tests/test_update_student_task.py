@@ -37,7 +37,7 @@ class UpdateTaskTest(TestCase):
         self.then_we_get_back_a_404(response)
         self.and_an_error_message_of(response, {'error': 'Task not found'})
 
-    def test_update_task_invalid_method(self):
+    def test_should_not_update_task_given_invalid_method(self):
         self.given_the_student_is_logged_in()
 
         response = self.when_a_user_makes_a_request_with_an_invalid_post_method()
@@ -45,16 +45,10 @@ class UpdateTaskTest(TestCase):
         self.then_we_get_back_a_405(response)
         self.and_an_error_message_of(response, {'error': 'Method not allowed'})
 
-    def test_update_task_unauthenticated(self):
-        data = {
-            'id': 1,
-            'name': 'Updated Task',
-            'due_date': '2024-05-15',
-            'description': 'Updated Description'
-        }
-        response = self.when_the_user_makes_a_request_to_update_a_task(data)
+    def test_should_not_update_task_given_unauthenticated_user(self):
+        response = self.when_the_user_makes_a_request_to_update_a_task(self.with_some_valid_task_data())
 
-        self.assertEqual(response.status_code, 302)
+        self.then_we_get_back_a_302(response)
 
     def given_the_student_is_logged_in(self):
         self.client.force_login(self.student)
@@ -93,6 +87,10 @@ class UpdateTaskTest(TestCase):
     def then_we_get_back_a_405(self, response):
         self.assertEqual(response.status_code, 405)
 
+    def then_we_get_back_a_302(self, response):
+        self.assertEqual(response.status_code, 302)
+
+
     def when_a_user_makes_a_request_with_an_invalid_post_method(self):
         response = self.client.post(reverse('edit-task'))
         return response
@@ -125,6 +123,16 @@ class UpdateTaskTest(TestCase):
     def updated_task_data_with_invalid_id():
         data = {
             'id': 999,
+            'name': 'Updated Task',
+            'due_date': '2024-05-15',
+            'description': 'Updated Description'
+        }
+        return data
+
+    @staticmethod
+    def with_some_valid_task_data():
+        data = {
+            'id': 1,
             'name': 'Updated Task',
             'due_date': '2024-05-15',
             'description': 'Updated Description'
