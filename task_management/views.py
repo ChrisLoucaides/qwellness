@@ -104,4 +104,21 @@ def update_task(request):
 
 @login_required()
 def delete_task(request):
-    pass
+    if request.method == 'DELETE':
+        data = json.loads(request.body.decode('utf-8'))
+
+        task_id = data.get('id')
+
+        if not task_id:
+            return JsonResponse({'error': 'Task ID is required'}, status=400)
+
+        try:
+            task = Task.objects.get(id=task_id)
+            task.delete()
+        except Task.DoesNotExist:
+            return JsonResponse({'error': 'Task not found'}, status=404)
+
+        return JsonResponse({'success': True, 'task_id': task.id}, status=200)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
