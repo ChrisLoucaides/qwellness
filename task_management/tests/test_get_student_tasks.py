@@ -15,7 +15,7 @@ class GetStudentTasksTest(TestCase):
 
         response = self.when_we_make_a_request_to_the_student_tasks_endpoint()
 
-        self.then_we_get_back_a_200(response)
+        self.then_we_get_back_a_200(response)  # TODO FYP-23: refactor me
 
         response_data = json.loads(response.content)
         self.and_the_list_of_tasks_is_in_the_response_data(response_data)
@@ -56,7 +56,7 @@ class GetStudentTasksTest(TestCase):
         )
 
     def test_should_not_retrieve_tasks_given_invalid_student(self):
-        response = self.given_a_request_to_the_student_tasks_endpoint_containing_an_invalid_student()
+        response = self.when_a_request_to_the_student_tasks_endpoint_containing_an_invalid_student()
 
         self.then_we_get_a_404(response)
         response_data = json.loads(response.content)
@@ -68,11 +68,11 @@ class GetStudentTasksTest(TestCase):
     def then_we_get_a_404(self, response):
         self.assertEqual(response.status_code, 404)
 
-    def given_a_request_to_the_student_tasks_endpoint_containing_an_invalid_student(self):
+    def when_a_request_to_the_student_tasks_endpoint_containing_an_invalid_student(self):
         response = self.client.get('/student-tasks/?username=non_existing_student')
         return response
 
-    def test_get_student_tasks_method_not_allowed(self):
+    def test_should_not_retrieve_student_tasks_given_wrong_http_method(self):
         response = self.when_a_post_request_is_made_to_the_student_tasks_endpoint()
 
         self.then_we_get_a_405(response)

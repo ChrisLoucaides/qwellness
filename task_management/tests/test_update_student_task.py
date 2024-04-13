@@ -16,7 +16,7 @@ class UpdateTaskTest(TestCase):
 
         response = self.when_the_user_makes_a_request_to_update_a_task(self.with_valid_updated_data(task))
 
-        self.then_the_task_is_updated(response)
+        self.then_the_task_is_updated_successfully(response)
         self.and_the_updated_task_has_name(self.the_updated_task(task), 'Updated Task')
         self.and_the_updated_task_has_date(self.the_updated_task(task), '2024-05-15')
         self.and_the_updated_task_has_description(self.the_updated_task(task), 'Updated Description')
@@ -67,7 +67,7 @@ class UpdateTaskTest(TestCase):
         response = self.client.post(reverse('edit-task'))
         return response
 
-    def then_the_task_is_updated(self, response):
+    def then_the_task_is_updated_successfully(self, response):
         self.assertEqual(response.status_code, 200)
 
     def then_the_task_is_not_updated_and_we_get_a_response_code_of(self, response, response_code):

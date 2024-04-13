@@ -52,7 +52,7 @@ class CreateTaskTest(TestCase):
 
         response = self.when_a_post_request_is_made_to_the_new_task_endpoint(data)
 
-        self.then_we_get_a_404(response)
+        self.then_we_get_a_404(response)  # TODO FYP-22 Refactor into common method
 
         response_data = response.json()
         self.and_the_response_contains_a_student_not_found_error_message(response_data)
@@ -60,7 +60,7 @@ class CreateTaskTest(TestCase):
     def and_the_response_contains_a_student_not_found_error_message(self, response_data):
         self.assertEqual(response_data['error'], 'Student not found')
 
-    def then_we_get_a_404(self, response):
+    def then_we_get_a_404(self, response): # TODO FYP-22 Refactor into common method
         self.assertEqual(response.status_code, 404)
 
     @staticmethod
