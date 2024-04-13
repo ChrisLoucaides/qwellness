@@ -37,13 +37,13 @@ class UpdateTaskTest(TestCase):
         self.then_we_get_back_a_404(response)
         self.and_an_error_message_of(response, {'error': 'Task not found'})
 
-    def test_update_task_invalid_method(self):  # TODO FYP-24: Refactor Me
+    def test_update_task_invalid_method(self):
         self.given_the_student_is_logged_in()
 
-        response = self.client.post(reverse('edit-task'))
+        response = self.when_a_user_makes_a_request_with_an_invalid_post_method()
 
-        self.assertEqual(response.status_code, 405)
-        self.assertEqual(response.json(), {'error': 'Method not allowed'})
+        self.then_we_get_back_a_405(response)
+        self.and_an_error_message_of(response, {'error': 'Method not allowed'})
 
     def test_update_task_unauthenticated(self):
         data = {
@@ -89,6 +89,13 @@ class UpdateTaskTest(TestCase):
 
     def then_we_get_back_a_404(self, response):  # TODO FYP-24: Refactor into common method
         self.assertEqual(response.status_code, 404)
+
+    def then_we_get_back_a_405(self, response):
+        self.assertEqual(response.status_code, 405)
+
+    def when_a_user_makes_a_request_with_an_invalid_post_method(self):
+        response = self.client.post(reverse('edit-task'))
+        return response
 
     @staticmethod
     def updated_task_data_with_no_id():
