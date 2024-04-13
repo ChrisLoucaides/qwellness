@@ -5,7 +5,7 @@ from user_management.models import Student
 from task_management.models import Task
 
 
-class UpdateTaskTest(TestCase):  # TODO FYP-24: Refactor me
+class UpdateTaskTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.student = Student.objects.create(username='test_student')
@@ -21,7 +21,7 @@ class UpdateTaskTest(TestCase):  # TODO FYP-24: Refactor me
         self.and_the_updated_task_has_date(self.the_updated_task(task), '2024-05-15')
         self.and_the_updated_task_has_description(self.the_updated_task(task), 'Updated Description')
 
-    def test_update_task_missing_id(self):
+    def test_should_not_update_task_given_missing_id(self):
         self.given_the_student_is_logged_in()
 
         response = self.when_the_user_makes_a_request_to_update_a_task(self.updated_task_data_with_no_id())
@@ -29,21 +29,15 @@ class UpdateTaskTest(TestCase):  # TODO FYP-24: Refactor me
         self.then_we_get_back_a_400(response)
         self.and_an_error_message_of(response, {'error': 'Task ID is required'})
 
-    def test_update_task_invalid_id(self):  # TODO FYP-24: Refactor me
+    def test_should_not_update_task_given_invalid_id(self):
         self.given_the_student_is_logged_in()
 
-        data = {
-            'id': 999,
-            'name': 'Updated Task',
-            'due_date': '2024-05-15',
-            'description': 'Updated Description'
-        }
-        response = self.when_the_user_makes_a_request_to_update_a_task(data)
+        response = self.when_the_user_makes_a_request_to_update_a_task(self.updated_task_data_with_invalid_id())
 
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json(), {'error': 'Task not found'})
+        self.then_we_get_back_a_404(response)
+        self.and_an_error_message_of(response, {'error': 'Task not found'})
 
-    def test_update_task_invalid_method(self):
+    def test_update_task_invalid_method(self):  # TODO FYP-24: Refactor Me
         self.given_the_student_is_logged_in()
 
         response = self.client.post(reverse('edit-task'))
@@ -90,8 +84,11 @@ class UpdateTaskTest(TestCase):  # TODO FYP-24: Refactor me
     def and_an_error_message_of(self, response, error):
         self.assertEqual(response.json(), error)
 
-    def then_we_get_back_a_400(self, response):
+    def then_we_get_back_a_400(self, response):  # TODO FYP-24: Refactor into common method
         self.assertEqual(response.status_code, 400)
+
+    def then_we_get_back_a_404(self, response):  # TODO FYP-24: Refactor into common method
+        self.assertEqual(response.status_code, 404)
 
     @staticmethod
     def updated_task_data_with_no_id():
@@ -117,3 +114,12 @@ class UpdateTaskTest(TestCase):  # TODO FYP-24: Refactor me
         }
         return updated_data
 
+    @staticmethod
+    def updated_task_data_with_invalid_id():
+        data = {
+            'id': 999,
+            'name': 'Updated Task',
+            'due_date': '2024-05-15',
+            'description': 'Updated Description'
+        }
+        return data
