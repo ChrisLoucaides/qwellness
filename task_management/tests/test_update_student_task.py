@@ -26,7 +26,7 @@ class UpdateTaskTest(TestCase):
 
         response = self.when_the_user_makes_a_request_to_update_a_task(self.updated_task_data_with_no_id())
 
-        self.then_we_get_back_a_400(response)
+        self.then_we_get_a_response_code(response, 400)
         self.and_an_error_message_of(response, {'error': 'Task ID is required'})
 
     def test_should_not_update_task_given_invalid_id(self):
@@ -34,7 +34,7 @@ class UpdateTaskTest(TestCase):
 
         response = self.when_the_user_makes_a_request_to_update_a_task(self.updated_task_data_with_invalid_id())
 
-        self.then_we_get_back_a_404(response)
+        self.then_we_get_a_response_code(response, 404)
         self.and_an_error_message_of(response, {'error': 'Task not found'})
 
     def test_should_not_update_task_given_invalid_method(self):
@@ -42,13 +42,13 @@ class UpdateTaskTest(TestCase):
 
         response = self.when_a_user_makes_a_request_with_an_invalid_post_method()
 
-        self.then_we_get_back_a_405(response)
+        self.then_we_get_a_response_code(response, 405)
         self.and_an_error_message_of(response, {'error': 'Method not allowed'})
 
     def test_should_not_update_task_given_unauthenticated_user(self):
         response = self.when_the_user_makes_a_request_to_update_a_task(self.with_some_valid_task_data())
 
-        self.then_we_get_back_a_302(response)
+        self.then_we_get_a_response_code(response, 302)
 
     def given_the_student_is_logged_in(self):
         self.client.force_login(self.student)
@@ -63,8 +63,15 @@ class UpdateTaskTest(TestCase):
                                    content_type='application/json')
         return response
 
+    def when_a_user_makes_a_request_with_an_invalid_post_method(self):
+        response = self.client.post(reverse('edit-task'))
+        return response
+
     def then_the_task_is_updated(self, response):
         self.assertEqual(response.status_code, 200)
+
+    def then_we_get_a_response_code(self, response, response_code):
+        self.assertEqual(response.status_code, response_code)
 
     def and_the_updated_task_has_description(self, updated_task, updated_task_description):
         self.assertEqual(updated_task.description, updated_task_description)
@@ -77,23 +84,6 @@ class UpdateTaskTest(TestCase):
 
     def and_an_error_message_of(self, response, error):
         self.assertEqual(response.json(), error)
-
-    def then_we_get_back_a_400(self, response):  # TODO FYP-24: Refactor into common method
-        self.assertEqual(response.status_code, 400)
-
-    def then_we_get_back_a_404(self, response):  # TODO FYP-24: Refactor into common method
-        self.assertEqual(response.status_code, 404)
-
-    def then_we_get_back_a_405(self, response):
-        self.assertEqual(response.status_code, 405)
-
-    def then_we_get_back_a_302(self, response):
-        self.assertEqual(response.status_code, 302)
-
-
-    def when_a_user_makes_a_request_with_an_invalid_post_method(self):
-        response = self.client.post(reverse('edit-task'))
-        return response
 
     @staticmethod
     def updated_task_data_with_no_id():
