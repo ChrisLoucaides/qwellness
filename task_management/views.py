@@ -100,3 +100,8 @@ def update_task(request):
         return JsonResponse({'success': True, 'task_id': task.id})
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+@login_required()
+def delete_task(request):
+    pass
