@@ -57,7 +57,7 @@ class TestFilterAdvisorsStudents(TestCase):
         advisor = Advisor.objects.create(username=username)
         return advisor
 
-    def test_filter_advisors_students_no_authentication(self):
+    def test_should_not_returned_filtered_students_given_no_authentication(self):
 
         request = self.when_a_non_authenticated_user_makes_a_request_to_get_a_list_of_their_students()
 
