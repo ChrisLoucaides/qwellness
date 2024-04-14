@@ -17,7 +17,11 @@ class UserLogoutTestCase(TestCase):
 
         self.then_the_user_is_logged_out_and_redirected_to_the_login_page(response)
 
-    def then_the_user_is_logged_out_and_redirected_to_the_login_page(self, response):
+    def test_should_not_logout_when_user_is_not_logged_in(self):
+        request = self.given_a_logout_request_from_a_non_logged_in_user()
+
+        response = self.when_we_attempt_to_logout(request)
+
         self.assertEqual(response.status_code, 302)
 
     def given_a_logout_request_from_a_logged_in_user(self):
@@ -33,17 +37,13 @@ class UserLogoutTestCase(TestCase):
         middleware.process_request(request)
         return request
 
-    def test_should_not_logout_when_user_is_not_logged_in(self):
-        request = self.given_a_logout_request_from_a_non_logged_in_user()
-
-        response = self.when_we_attempt_to_logout(request)
-
-        self.assertEqual(response.status_code, 302)
-
     def given_a_logout_request_from_a_non_logged_in_user(self):
         request = self.factory.get(reverse('user_logout'))
         request.user = AnonymousUser()
         return request
+
+    def then_the_user_is_logged_out_and_redirected_to_the_login_page(self, response):
+        self.assertEqual(response.status_code, 302)
 
     @staticmethod
     def when_we_attempt_to_logout(request):
