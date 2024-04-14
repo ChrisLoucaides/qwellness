@@ -61,14 +61,13 @@ class UserLoginTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, DASHBOARD_URL)
 
+    def and_the_response_contains(self, response, response_message):
+        self.assertContains(response, response_message)
+
+    def then_the_user_is_not_logged_in_and_the_login_page_is_re_displayed(self, response):
+        self.assertEqual(response.status_code, 200)
+
     @staticmethod
     def when_we_attempt_authentication(request):
         response = user_login(request)
         return response
-
-    def and_the_response_contains(self, response, response_message):
-        self.assertContains(response, response_message)
-
-    def then_the_user_is_not_logged_in_and_the_login_page_is_re_displayed(self,
-                                                                          response):
-        self.assertEqual(response.status_code, 200)
