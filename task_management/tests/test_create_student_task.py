@@ -25,28 +25,6 @@ class CreateTaskTest(TestCase):
 
         Task.objects.filter(pk=task_id).delete()  # Clean Up
 
-    def and_the_task_has_been_added_to_the_database(self, task_id):
-        self.assertIsNotNone(Task.objects.filter(pk=task_id).first())
-
-    def and_we_get_a_success_response(self, response_data):
-        self.assertTrue(response_data['success'])
-
-    def then_a_new_task_is_created(self, response):
-        self.assertEqual(response.status_code, 201)
-
-    def when_a_post_request_is_made_to_the_new_task_endpoint(self, data):
-        return self.client.post('/new-task/', data=json.dumps(data), content_type='application/json')
-
-    @staticmethod
-    def given_a_valid_task_payload():
-        data = {
-            'username': 'test_student',
-            'name': 'Test Task',
-            'due_date': '2024-04-02',
-            'description': 'Test Description'
-        }
-        return data
-
     def test_should_not_create_task_given_student_does_not_exist(self):
         data = self.given_an_invalid_student_in_the_payload()
 
@@ -56,22 +34,6 @@ class CreateTaskTest(TestCase):
 
         response_data = response.json()
         self.and_the_response_contains_a_student_not_found_error_message(response_data)
-
-    def and_the_response_contains_a_student_not_found_error_message(self, response_data):
-        self.assertEqual(response_data['error'], 'Student not found')
-
-    def then_we_get_a_404(self, response): # TODO FYP-22 Refactor into common method
-        self.assertEqual(response.status_code, 404)
-
-    @staticmethod
-    def given_an_invalid_student_in_the_payload():
-        data = {
-            'username': 'non_existing_student',
-            'name': 'Test Task',
-            'due_date': '2024-04-02',
-            'description': 'Test Description'
-        }
-        return data
 
     def test_should_not_create_a_task_given_wrong_http_method(self):
         response = self.when_a_get_request_is_made_to_the_new_task_endpoint()
@@ -90,3 +52,41 @@ class CreateTaskTest(TestCase):
     def when_a_get_request_is_made_to_the_new_task_endpoint(self):
         response = self.client.get('/new-task/')
         return response
+
+    def and_the_task_has_been_added_to_the_database(self, task_id):
+        self.assertIsNotNone(Task.objects.filter(pk=task_id).first())
+
+    def and_we_get_a_success_response(self, response_data):
+        self.assertTrue(response_data['success'])
+
+    def then_a_new_task_is_created(self, response):
+        self.assertEqual(response.status_code, 201)
+
+    def when_a_post_request_is_made_to_the_new_task_endpoint(self, data):
+        return self.client.post('/new-task/', data=json.dumps(data), content_type='application/json')
+
+    def and_the_response_contains_a_student_not_found_error_message(self, response_data):
+        self.assertEqual(response_data['error'], 'Student not found')
+
+    def then_we_get_a_404(self, response):  # TODO FYP-22 Refactor into common method
+        self.assertEqual(response.status_code, 404)
+
+    @staticmethod
+    def given_an_invalid_student_in_the_payload():
+        data = {
+            'username': 'non_existing_student',
+            'name': 'Test Task',
+            'due_date': '2024-04-02',
+            'description': 'Test Description'
+        }
+        return data
+
+    @staticmethod
+    def given_a_valid_task_payload():
+        data = {
+            'username': 'test_student',
+            'name': 'Test Task',
+            'due_date': '2024-04-02',
+            'description': 'Test Description'
+        }
+        return data
