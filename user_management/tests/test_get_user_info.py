@@ -20,12 +20,31 @@ class TestGetUserInfo(TestCase):
         expected_data = self.then_the_response_comes_back_as_200(response, user)
         self.and_the_content_matches_with_our_expected_data(expected_data, response)
 
-    def and_the_content_matches_with_our_expected_data(self, expected_data, response):
-        response_data = json.loads(response.content.decode('utf-8'))
-        for key in expected_data:
-            self.assertEqual(response_data[key], expected_data[key])
+    def test_get_user_info_request_should_redirect_to_login_given_no_authentication(self):
+        to_get_info = self.given_a_request_is_made_to_the_get_user_info_endpoint()
+        self.and_the_user_is_not_authenticated(to_get_info)
 
-        self.assertTrue('last_login_time' in response_data)
+        response = self.when_a_request_is_made(to_get_info)
+
+        self.then_the_user_is_redirected(response)
+        self.to_the_login_page(response)
+
+    def given_an_authenticated_student_user_with_credentials(self, username, password, first_name):
+        return self.User.objects.create_user(username=username, password=password, first_name=first_name,
+                                             role='student')
+
+    def given_a_request_is_made_to_the_get_user_info_endpoint(self):
+        request = self.factory.get('/get-user-info/')
+        return request
+
+    def to_the_login_page(self, response):
+        self.assertIn('Location', response.headers)
+        self.assertIn('/accounts/login/', response.headers['Location'])
+
+    def to_the_get_user_info_endpoint_with_user(self, user):
+        request = self.factory.get('/get-user-info/')
+        request.user = user
+        return request
 
     def then_the_response_comes_back_as_200(self, response, user):
         self.assertEqual(response.status_code, 200)
@@ -38,42 +57,23 @@ class TestGetUserInfo(TestCase):
         }
         return expected_data
 
-    def to_the_get_user_info_endpoint_with_user(self, user):
-        request = self.factory.get('/get-user-info/')
-        request.user = user
-        return request
+    def then_the_user_is_redirected(self, response):
+        self.assertEqual(response.status_code, 302)
 
     def and_an_advisor_with_credentials(self, username, password, first_name):
         return self.User.objects.create_user(username=username, password=password,
                                              first_name=first_name)
 
-    def given_an_authenticated_student_user_with_credentials(self, username, password, first_name):
-        return self.User.objects.create_user(username=username, password=password, first_name=first_name,
-                                             role='student')
+    def and_the_content_matches_with_our_expected_data(self, expected_data, response):
+        response_data = json.loads(response.content.decode('utf-8'))
+        for key in expected_data:
+            self.assertEqual(response_data[key], expected_data[key])
+
+        self.assertTrue('last_login_time' in response_data)
 
     @staticmethod
     def and_the_user_is_saved(user):
         user.save()
-
-    def test_get_user_info_request_should_redirect_to_login_given_no_authentication(self):
-        to_get_info = self.given_a_request_is_made_to_the_get_user_info_endpoint()
-        self.and_the_user_is_not_authenticated(to_get_info)
-
-        response = self.when_a_request_is_made(to_get_info)
-
-        self.then_the_user_is_redirected(response)
-        self.to_the_login_page(response)
-
-    def then_the_user_is_redirected(self, response):
-        self.assertEqual(response.status_code, 302)
-
-    def given_a_request_is_made_to_the_get_user_info_endpoint(self):
-        request = self.factory.get('/get-user-info/')
-        return request
-
-    def to_the_login_page(self, response):
-        self.assertIn('Location', response.headers)
-        self.assertIn('/accounts/login/', response.headers['Location'])
 
     @staticmethod
     def and_the_user_is_not_authenticated(request):
