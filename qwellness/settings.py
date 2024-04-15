@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'user_management',
     'task_management',
+    'meeting_management',
 ]
 
 MIDDLEWARE = [

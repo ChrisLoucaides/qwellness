@@ -16,13 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+import meeting_management
 import task_management
 import user_management
 from user_management import urls
 from task_management import urls
+from meeting_management import urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(user_management.urls)),
-    path('', include(task_management.urls))
+    path('', include(task_management.urls)),
+    path('', include(meeting_management.urls))
 ]

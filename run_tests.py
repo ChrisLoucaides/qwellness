@@ -13,7 +13,7 @@ django.setup()
 def run_tests():
     TestRunner = get_runner(settings)
     test_runner = TestRunner()
-    apps = ['user_management', 'task_management']
+    apps = ['user_management', 'task_management', 'meeting_management']
     failures = test_runner.run_tests(apps)
     return failures
 
