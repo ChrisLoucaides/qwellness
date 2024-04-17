@@ -59,10 +59,7 @@ class MeetingManagementTestCase(TestCase):
 
     def test_create_meeting_no_advisor_assigned(self):
         self.given_a_logged_in_student()
-
-        self.student.advisor = None
-        self.student.save()
-
+        self.and_that_student_does_not_have_an_advisor_assigned()
         meeting_data = self.and_a_filled_in_meeting_form_for(SEVENTEENTH_OF_APRIL_2024, TEN_AM)
 
         response = self.when_the_user_requests_to_schedule_a_new_meeting(meeting_data)
@@ -80,6 +77,10 @@ class MeetingManagementTestCase(TestCase):
             'time': time
         }
         return meeting_data
+
+    def and_that_student_does_not_have_an_advisor_assigned(self):
+        self.student.advisor = None
+        self.student.save()
 
     def when_the_user_requests_to_schedule_a_new_meeting(self, meeting_data):
         response = self.client.post(reverse('advisor-meeting-for-student'), data=json.dumps(meeting_data),
