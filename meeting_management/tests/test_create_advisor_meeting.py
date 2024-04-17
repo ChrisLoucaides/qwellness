@@ -40,16 +40,12 @@ class MeetingManagementTestCase(TestCase):
 
     def test_create_meeting_missing_fields(self):
         self.given_a_logged_in_student()
-
-        meeting_data = {
-            'id': self.student.id,
-            'time': TEN_AM
-        }
+        meeting_data = self.and_a_filled_in_meeting_form_with_no_date()
 
         response = self.when_the_user_requests_to_schedule_a_new_meeting(meeting_data)
 
-        self.assertEqual(response.status_code, 400)
-        self.assertTrue('error' in response.json())
+        self.then_we_get_a_response_code_of(response, 400)
+        self.and_there_is_an_error_in_the_response(response)
 
     def test_create_meeting_student_not_found(self):
         self.given_a_logged_in_student()
@@ -63,7 +59,7 @@ class MeetingManagementTestCase(TestCase):
         response = self.when_the_user_requests_to_schedule_a_new_meeting(meeting_data)
 
         self.assertEqual(response.status_code, 404)
-        self.assertTrue('error' in response.json())
+        self.and_there_is_an_error_in_the_response(response)
 
     def test_create_meeting_no_advisor_assigned(self):
         self.given_a_logged_in_student()
@@ -75,8 +71,8 @@ class MeetingManagementTestCase(TestCase):
 
         response = self.when_the_user_requests_to_schedule_a_new_meeting(meeting_data)
 
-        self.assertEqual(response.status_code, 400)
-        self.assertTrue('error' in response.json())
+        self.then_we_get_a_response_code_of(response, 400)
+        self.and_there_is_an_error_in_the_response(response)
 
     def given_a_logged_in_student(self):
         self.client.login(username=VALID_STUDENT_USERNAME, password=VALID_STUDENT_PASSWORD)
@@ -97,6 +93,12 @@ class MeetingManagementTestCase(TestCase):
     def then_the_meeting_is_scheduled(self, response):
         self.assertEqual(response.status_code, 201)
 
+    def then_we_get_a_response_code_of(self, response, response_code):
+        self.assertEqual(response.status_code, response_code)
+
+    def and_there_is_an_error_in_the_response(self, response):
+        self.assertTrue('error' in response.json())
+
     def and_the_meeting_id_field_is_in_the_response(self, response):
         self.assertTrue('meeting_id' in response.json())
 
@@ -105,3 +107,10 @@ class MeetingManagementTestCase(TestCase):
 
     def and_the_value_of_the_new_meeting_id_is_in_the_response(self, response):
         self.assertIn(response.json()['meeting_id'], Student.objects.get(id=self.student.id).advisor_meeting_ids)
+
+    def and_a_filled_in_meeting_form_with_no_date(self):
+        meeting_data = {
+            'id': self.student.id,
+            'time': TEN_AM
+        }
+        return meeting_data
