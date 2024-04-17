@@ -1,92 +1,83 @@
-import json
 from django.test import TestCase, Client
-from user_management.models import Student, Advisor
-from meeting_management.models import Meeting
+from django.urls import reverse
+from user_management.models import Advisor, Student
+import json
 
 
-class CreateMeetingTest(TestCase):
+class MeetingManagementTestCase(TestCase):
     def setUp(self):
         self.client = Client()
-        self.student = Student.objects.create(username='test_student')
-        self.advisor = Advisor.objects.create(username='test_advisor')
-        self.client.force_login(self.student)
 
-    def test_should_create_a_new_meeting_for_a_student(self):
-        data = self.given_a_valid_meeting_payload()
+        self.advisor = Advisor.objects.create_user(username='advisor', email='advisor@example.com', password='password')
+        self.student = Student.objects.create_user(username='student', email='student@example.com', password='password')
 
-        response = self.when_a_post_request_is_made_to_create_meeting_endpoint(data)
+        self.student.advisor = self.advisor
+        self.student.save()
 
-        self.then_a_new_meeting_is_created(response)
+    def test_create_meeting_success(self):
+        self.client.login(username='advisor', password='password')
 
-        response_data = response.json()
-        self.and_we_get_a_success_response(response_data)
-
-        meeting_id = response_data['meeting_id']
-        self.and_the_meeting_has_been_added_to_the_database(meeting_id)
-
-        Meeting.objects.filter(pk=meeting_id).delete()  # Clean Up
-
-    def test_should_create_a_new_meeting_for_an_advisor(self):
-        data = self.given_a_valid_meeting_payload_for_advisor()
-
-        response = self.when_a_post_request_is_made_to_create_meeting_endpoint(data)
-
-        self.then_a_new_meeting_is_created(response)
-
-        response_data = response.json()
-        self.and_we_get_a_success_response(response_data)
-
-        meeting_id = response_data['meeting_id']
-        self.and_the_meeting_has_been_added_to_the_database(meeting_id)
-
-        Meeting.objects.filter(pk=meeting_id).delete()  # Clean Up
-
-    def test_should_not_create_meeting_given_invalid_user_id(self):
-        data = self.given_an_invalid_user_id_in_payload()
-
-        response = self.when_a_post_request_is_made_to_create_meeting_endpoint(data)
-
-        self.then_we_get_a_404(response)
-        response_data = response.json()
-        self.and_the_response_contains_an_error_message(response_data)
-
-    def given_a_valid_meeting_payload(self):
-        data = {
-            'user_id': self.student.id,
-            'date_and_time': '2024-04-16T10:00:00'
+        meeting_data = {
+            'id': self.student.id,
+            'date': '2024-04-17',
+            'time': '10:00'
         }
-        return data
 
-    def given_a_valid_meeting_payload_for_advisor(self):
-        data = {
-            'user_id': self.advisor.id,
-            'date_and_time': '2024-04-16T10:00:00',
-            'student_username': self.student.username
-        }
-        return data
+        response = self.client.post(reverse('advisor-meeting-for-student'), data=json.dumps(meeting_data),
+                                    content_type='application/json')
 
-    @staticmethod
-    def given_an_invalid_user_id_in_payload():
-        data = {
-            'user_id': 9999,
-            'date_and_time': '2024-04-16T10:00:00'
-        }
-        return data
+        print(response.content)
 
-    def when_a_post_request_is_made_to_create_meeting_endpoint(self, data):
-        return self.client.post('/advisor-meeting/', data=json.dumps(data), content_type='application/json')
-
-    def then_a_new_meeting_is_created(self, response):
         self.assertEqual(response.status_code, 201)
+        self.assertTrue('meeting_id' in response.json())
 
-    def and_we_get_a_success_response(self, response_data):
-        self.assertTrue(response_data['success'])
+        student = Student.objects.get(id=self.student.id)
+        self.assertTrue(student.advisor_meeting_ids)
+        self.assertIn(response.json()['meeting_id'], student.advisor_meeting_ids)
 
-    def and_the_meeting_has_been_added_to_the_database(self, meeting_id):
-        self.assertIsNotNone(Meeting.objects.filter(pk=meeting_id).first())
+    def test_create_meeting_missing_fields(self):
+        self.client.login(username='advisor', password='password')
 
-    def then_we_get_a_404(self, response):
+        meeting_data = {
+            'id': self.student.id,
+            'time': '10:00'
+        }
+
+        response = self.client.post(reverse('advisor-meeting-for-student'), data=json.dumps(meeting_data),
+                                    content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue('error' in response.json())
+
+    def test_create_meeting_student_not_found(self):
+        self.client.login(username='advisor', password='password')
+
+        meeting_data = {
+            'id': 9999,
+            'date': '2024-04-17',
+            'time': '10:00'
+        }
+
+        response = self.client.post(reverse('advisor-meeting-for-student'), data=json.dumps(meeting_data),
+                                    content_type='application/json')
+
         self.assertEqual(response.status_code, 404)
+        self.assertTrue('error' in response.json())
 
-    def and_the_response_contains_an_error_message(self, response_data):
-        self.assertIn('error', response_data)
+    def test_create_meeting_no_advisor_assigned(self):
+        self.client.login(username='advisor', password='password')
+
+        self.student.advisor = None
+        self.student.save()
+
+        meeting_data = {
+            'id': self.student.id,
+            'date': '2024-04-17',
+            'time': '10:00'
+        }
+
+        response = self.client.post(reverse('advisor-meeting-for-student'), data=json.dumps(meeting_data),
+                                    content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue('error' in response.json())
