@@ -50,15 +50,11 @@ class MeetingManagementTestCase(TestCase):
     def test_create_meeting_student_not_found(self):
         self.given_a_logged_in_student()
 
-        meeting_data = {
-            'id': 9999,
-            'date': SEVENTEENTH_OF_APRIL_2024,
-            'time': TEN_AM
-        }
+        meeting_data = self.and_a_filled_in_meeting_form_with_invalid_id()
 
         response = self.when_the_user_requests_to_schedule_a_new_meeting(meeting_data)
 
-        self.assertEqual(response.status_code, 404)
+        self.then_we_get_a_response_code_of(response, 404)
         self.and_there_is_an_error_in_the_response(response)
 
     def test_create_meeting_no_advisor_assigned(self):
@@ -111,6 +107,15 @@ class MeetingManagementTestCase(TestCase):
     def and_a_filled_in_meeting_form_with_no_date(self):
         meeting_data = {
             'id': self.student.id,
+            'time': TEN_AM
+        }
+        return meeting_data
+
+    @staticmethod
+    def and_a_filled_in_meeting_form_with_invalid_id():
+        meeting_data = {
+            'id': 9999,
+            'date': SEVENTEENTH_OF_APRIL_2024,
             'time': TEN_AM
         }
         return meeting_data
