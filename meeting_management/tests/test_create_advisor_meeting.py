@@ -27,7 +27,7 @@ class MeetingManagementTestCase(TestCase):
         self.student.advisor = self.advisor
         self.student.save()
 
-    def test_create_meeting_success(self):
+    def test_student_should_be_able_to_schedule_advisor_meeting(self):
         self.given_a_logged_in_student()
         meeting_data = self.and_a_filled_in_meeting_form_for(SEVENTEENTH_OF_APRIL_2024, TEN_AM)
 
@@ -38,7 +38,7 @@ class MeetingManagementTestCase(TestCase):
         self.and_the_meeting_id_is_added_to_the_students_list_of__meeting_ids()
         self.and_the_value_of_the_new_meeting_id_is_in_the_response(response)
 
-    def test_create_meeting_missing_fields(self):
+    def test_should_not_schedule_advisor_meeting_given_missing_fields(self):
         self.given_a_logged_in_student()
         meeting_data = self.and_a_filled_in_meeting_form_with_no_date()
 
@@ -47,7 +47,7 @@ class MeetingManagementTestCase(TestCase):
         self.then_we_get_a_response_code_of(response, 400)
         self.and_there_is_an_error_in_the_response(response)
 
-    def test_create_meeting_student_not_found(self):
+    def test_should_not_schedule_advisor_meeting_if_student_does_not_exist(self):
         self.given_a_logged_in_student()
 
         meeting_data = self.and_a_filled_in_meeting_form_with_invalid_id()
@@ -57,7 +57,7 @@ class MeetingManagementTestCase(TestCase):
         self.then_we_get_a_response_code_of(response, 404)
         self.and_there_is_an_error_in_the_response(response)
 
-    def test_create_meeting_no_advisor_assigned(self):
+    def test_should_not_schedule_meeting_if_no_advisor_assigned_to_student(self):
         self.given_a_logged_in_student()
         self.and_that_student_does_not_have_an_advisor_assigned()
         meeting_data = self.and_a_filled_in_meeting_form_for(SEVENTEENTH_OF_APRIL_2024, TEN_AM)
