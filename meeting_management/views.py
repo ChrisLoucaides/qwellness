@@ -65,3 +65,24 @@ def get_student_meetings(request):
             return JsonResponse({'error': str(e)}, status=500)
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+@login_required()
+def delete_meeting(request):
+    if request.method == 'DELETE':
+        data = json.loads(request.body.decode('utf-8'))
+
+        meeting_id = data.get('id')
+
+        if not meeting_id:
+            return JsonResponse({'error': 'Meeting ID is required'}, status=400)
+
+        try:
+            meeting = Meeting.objects.get(id=meeting_id)
+            meeting.delete()
+        except Meeting.DoesNotExist:
+            return JsonResponse({'error': 'Meeting not found'}, status=404)
+
+        return JsonResponse({'success': True, 'meeting_id': meeting.id}, status=200)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
