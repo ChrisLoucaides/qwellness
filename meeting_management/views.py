@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 import json
-from user_management.models import Student
+from user_management.models import Student, Advisor
 from meeting_management.models import Meeting
 
 
@@ -38,6 +38,44 @@ def create_meeting_student(request):
             student.advisor_meeting_ids = []
         student.advisor_meeting_ids.append(meeting.id)
         student.save()
+
+        return JsonResponse({'success': True, 'meeting_id': meeting.id}, status=201)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+@login_required()
+def create_meeting_advisor(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+
+        advisor_id = data.get('id')
+        student_username = data.get('student')
+        meeting_date = data.get('date')
+        meeting_time = data.get('time')
+
+        if not advisor_id or not student_username or not meeting_date or not meeting_time:
+            return JsonResponse({'error': 'Advisor ID, Student Username, date, and time are required'}, status=400)
+
+        try:
+            advisor = Advisor.objects.get(id=advisor_id)
+        except Advisor.DoesNotExist:
+            return JsonResponse({'error': 'Advisor not found'}, status=404)
+
+        student = Student.objects.get(username=student_username)
+
+        if not student:
+            return JsonResponse({'error': 'Advisor does not have a student assigned'}, status=400)
+
+        if not student.advisor:
+            return JsonResponse({'error': 'Student is not assigned to any advisor'}, status=400)
+
+        meeting = Meeting.objects.create(
+            student=student,
+            advisor=advisor,
+            date=meeting_date,
+            time=meeting_time
+        )
 
         return JsonResponse({'success': True, 'meeting_id': meeting.id}, status=201)
     else:
