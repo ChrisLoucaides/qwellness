@@ -34,11 +34,6 @@ def create_meeting_student(request):
             time=meeting_time
         )
 
-        if not student.advisor_meeting_ids:
-            student.advisor_meeting_ids = []
-        student.advisor_meeting_ids.append(meeting.id)
-        student.save()
-
         return JsonResponse({'success': True, 'meeting_id': meeting.id}, status=201)
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)

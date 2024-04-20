@@ -35,8 +35,6 @@ class MeetingManagementTestCase(TestCase):
 
         self.then_the_meeting_is_scheduled(response)
         self.and_the_meeting_id_field_is_in_the_response(response)
-        self.and_the_meeting_id_is_added_to_the_students_list_of__meeting_ids()
-        self.and_the_value_of_the_new_meeting_id_is_in_the_response(response)
 
     def test_should_not_schedule_advisor_meeting_given_missing_fields(self):
         self.given_a_logged_in_student()
@@ -98,12 +96,6 @@ class MeetingManagementTestCase(TestCase):
 
     def and_the_meeting_id_field_is_in_the_response(self, response):
         self.assertTrue('meeting_id' in response.json())
-
-    def and_the_meeting_id_is_added_to_the_students_list_of__meeting_ids(self):
-        self.assertTrue(Student.objects.get(id=self.student.id).advisor_meeting_ids)
-
-    def and_the_value_of_the_new_meeting_id_is_in_the_response(self, response):
-        self.assertIn(response.json()['meeting_id'], Student.objects.get(id=self.student.id).advisor_meeting_ids)
 
     def and_a_filled_in_meeting_form_with_no_date(self):
         meeting_data = {
