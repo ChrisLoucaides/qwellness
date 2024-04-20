@@ -41,7 +41,6 @@ def user_login(request):
             response.set_cookie('user_id', str(user.id))
             return response
         else:
-            print("Authentication failed for user:", username)
             error_message = 'Invalid username or password'
             return render(request, 'login.html', {'error_message': error_message})
     else:
