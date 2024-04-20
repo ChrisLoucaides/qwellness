@@ -100,6 +100,31 @@ def get_student_meetings(request):
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
+@login_required
+def get_advisor_meetings(request):
+    if request.method == 'GET':
+        advisor_id = request.GET.get('id')
+
+        try:
+            advisor = Advisor.objects.get(id=advisor_id)
+        except Advisor.DoesNotExist:
+            return JsonResponse({'error': 'Advisor not found'}, status=404)
+
+        if not advisor_id:
+            return JsonResponse({'error': 'Advisor ID is required'}, status=400)
+
+        try:
+            advisor_meetings = Meeting.objects.filter(advisor_id=advisor.id)
+            meetings_data = [{'id': meeting.id, 'student': meeting.student.username, 'date': meeting.date, 'time': meeting.time}
+                             for meeting in advisor_meetings]
+            return JsonResponse({'meetings': meetings_data}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
 @login_required()
 def delete_meeting(request):
     if request.method == 'DELETE':
