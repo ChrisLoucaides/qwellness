@@ -34,7 +34,7 @@ class MeetingManagementTestCase(TestCase):
 
     def test_advisor_should_be_able_to_schedule_student_meeting(self):
         self.given_a_logged_in_advisor()
-        meeting_data = self.and_a_filled_in_meeting_form_for_student(SEVENTEENTH_OF_APRIL_2024, TEN_AM)
+        meeting_data = self.and_a_valid_filled_in_meeting_form(VALID_STUDENT_USERNAME, SEVENTEENTH_OF_APRIL_2024, TEN_AM)
 
         response = self.when_the_user_requests_to_schedule_a_new_meeting(meeting_data)
 
@@ -72,10 +72,10 @@ class MeetingManagementTestCase(TestCase):
     def given_a_logged_in_advisor(self):
         self.client.login(username=VALID_ADVISOR_USERNAME, password=VALID_ADVISOR_PASSWORD)
 
-    def and_a_filled_in_meeting_form_for_student(self, date, time):
+    def and_a_valid_filled_in_meeting_form(self, student, date, time):
         meeting_data = {
             'id': self.advisor.id,
-            'student': VALID_STUDENT_USERNAME,
+            'student': student,
             'date': date,
             'time': time
         }

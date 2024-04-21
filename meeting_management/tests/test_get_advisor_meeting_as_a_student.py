@@ -20,7 +20,7 @@ class TestGetStudentMeetingsView(TestCase):
     def test_should_retrieve_student_meetings(self):
         self.given_a_logged_in_student()
 
-        response = self.when_the_user_requests_to_view_their_tasks()
+        response = self.when_the_user_requests_to_view_their_meetings()
 
         self.then_we_get_back_a_response_code(response, 200)
         self.and_the_correct_number_of_meetings_are_returned(response)
@@ -37,13 +37,13 @@ class TestGetStudentMeetingsView(TestCase):
 
         response = self.when_the_user_with_an_invalid_id_requests_to_view_their_tasks()
 
-        self.assertEqual(response.status_code, 404)
-        self.assertIn('error', response.json())
+        self.then_we_get_back_a_response_code(response, 404)
+        self.and_there_is_an_error_in_the_response(response)
 
     def given_a_logged_in_student(self):
         self.client.force_login(self.student)
 
-    def when_the_user_requests_to_view_their_tasks(self):
+    def when_the_user_requests_to_view_their_meetings(self):
         response = self.client.get(reverse('student-meetings'), {'id': self.student.id})
         return response
 
@@ -60,3 +60,6 @@ class TestGetStudentMeetingsView(TestCase):
 
     def and_the_correct_number_of_meetings_are_returned(self, response):
         self.assertEqual(len(response.json()['meetings']), 2)
+
+    def and_there_is_an_error_in_the_response(self, response):
+        self.assertIn('error', response.json())

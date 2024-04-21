@@ -36,8 +36,8 @@ class TestGetAdvisorMeetingsView(TestCase):
 
         response = self.when_the_user_with_an_invalid_id_requests_to_view_their_meetings()
 
-        self.assertEqual(response.status_code, 404)
-        self.assertIn('error', response.json())
+        self.then_we_get_back_a_response_code(response, 404)
+        self.and_there_is_an_error_in_the_response(response)
 
     def given_a_logged_in_advisor(self):
         self.client.force_login(self.advisor)
@@ -59,3 +59,6 @@ class TestGetAdvisorMeetingsView(TestCase):
 
     def and_the_correct_number_of_meetings_are_returned(self, response):
         self.assertEqual(len(response.json()['meetings']), 2)
+
+    def and_there_is_an_error_in_the_response(self, response):
+        self.assertIn('error', response.json())

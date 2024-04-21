@@ -11,7 +11,7 @@ class DeleteStudentMeetingTest(TestCase):
         self.student = Student.objects.create(username='test_student')
         self.advisor = Advisor.objects.create(username='test_advisor')
 
-    def test_should_delete_meeting_associated_to_a_student(self):
+    def test_should_delete_meeting_associated_to_a_user(self):
         meeting = self.given_a_valid_meeting()
         self.given_the_user_is_logged_in()
 
@@ -20,7 +20,7 @@ class DeleteStudentMeetingTest(TestCase):
         self.then_the_meeting_is_deleted(response)
         self.and_we_get_a_success_message(response)
 
-    def test_should_not_delete_meeting_given_missing_id(self):
+    def test_should_not_delete_meeting_given_missing_meeting_id(self):
         self.given_the_user_is_logged_in()
 
         response = self.when_the_user_requests_to_delete_an_invalid_meeting()
