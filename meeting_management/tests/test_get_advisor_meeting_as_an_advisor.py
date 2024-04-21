@@ -16,7 +16,7 @@ class TestGetAdvisorMeetingsView(TestCase):
         self.meeting2 = Meeting.objects.create(student=self.student, advisor=self.advisor, date='2024-04-19',
                                                time='11:00:00')
 
-    def test_get_advisor_meetings(self):
+    def test_should_retrieve_advisor_meetings(self):
         self.given_a_logged_in_advisor()
 
         response = self.when_the_user_requests_to_view_their_meetings()
@@ -24,14 +24,14 @@ class TestGetAdvisorMeetingsView(TestCase):
         self.then_we_get_back_a_response_code(response, 200)
         self.and_the_correct_number_of_meetings_are_returned(response)
 
-    def test_get_advisor_meetings_invalid_method(self):
+    def test_should_not_retrieve_advisor_meetings_given_invalid_method(self):
         self.given_a_logged_in_advisor()
 
         response = self.when_a_user_requests_to_view_their_meetings_with_an_incorrect_http_post_method()
 
         self.then_we_get_back_a_response_code(response, 405)
 
-    def test_get_advisor_meetings_invalid_advisor_id(self):
+    def test_should_not_retrieve_advisor_meetings_given_invalid_advisor_id(self):
         self.given_a_logged_in_advisor()
 
         response = self.when_the_user_with_an_invalid_id_requests_to_view_their_meetings()
