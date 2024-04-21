@@ -59,4 +59,3 @@ class TestGetAdvisorMeetingsView(TestCase):
 
     def and_the_correct_number_of_meetings_are_returned(self, response):
         self.assertEqual(len(response.json()['meetings']), 2)
-
