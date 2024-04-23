@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -51,11 +49,6 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('/login')
-
-
-@login_required
-def dashboard(request):
-    return render(request, 'dashboard.html')
 
 
 @login_required
